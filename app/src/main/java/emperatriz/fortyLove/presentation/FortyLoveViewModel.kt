@@ -2,9 +2,11 @@ package emperatriz.fortyLove.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import emperatriz.fortyLove.data.model.Color40Love
 import emperatriz.fortyLove.data.model.Punto
 import emperatriz.fortyLove.data.model.Tanteo
 import emperatriz.fortyLove.data.model.GameScore
+import emperatriz.fortyLove.data.model.Pantalla
 import emperatriz.fortyLove.data.model.SetScore
 import emperatriz.fortyLove.data.model.TieBreakScore
 import emperatriz.fortyLove.data.model.isReseted
@@ -165,7 +167,21 @@ class FortyLoveViewModel(
 
     fun cambiaColor() {
         viewModelScope.launch {
-            val updated = _tanteo.value.copy(colorAzul = !_tanteo.value.colorAzul)
+            val updated = _tanteo.value.copy(color = if (_tanteo.value.color == Color40Love.AZUL) Color40Love.VERDE else Color40Love.AZUL)
+            updateTanteo(updated)
+        }
+    }
+
+    fun setOpciones(){
+        viewModelScope.launch {
+            val updated = _tanteo.value.copy(pantalla = Pantalla.OPCIONES)
+            updateTanteo(updated)
+        }
+    }
+
+    fun setColor(color: Color40Love){
+        viewModelScope.launch {
+            val updated = _tanteo.value.copy(color = color, pantalla = Pantalla.PUNTUACION)
             updateTanteo(updated)
         }
     }

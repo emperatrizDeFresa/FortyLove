@@ -30,6 +30,15 @@ enum class Pantalla() {
     OPCIONES()
 }
 
+enum class Color40Love( val izquierdo: Long, val derecho: Long) {
+    AZUL(0xFF0D47A1, 0xFF2D67C1),
+    VERDE(0xFF116600, 0xFF339900),
+    DORADO(0xFF999900, 0xFFbbbb00),
+    MORADO(0xFF4527A0, 0xFF6547C0),
+    GRIS(0xFF37474F, 0xFF57676f),
+    MALVA(0xFFAA77AA, 0xFFCC99CC)
+}
+
 
 data class GameScore(
     val nosotros: Int,
@@ -52,7 +61,8 @@ data class Tanteo(
     val nosotros: Punto,
     val ellos: Punto,
     val juegos: GameScore = GameScore(0, 0),
-    val colorAzul: Boolean = true,
+    val pantalla: Pantalla = Pantalla.PUNTUACION,
+    val color: Color40Love = Color40Love.AZUL,
     val sets: SetScore = SetScore(0, 0),
     val inTieBreak: Boolean = false,
     val tieBreak: TieBreakScore = TieBreakScore(0, 0),
@@ -73,10 +83,9 @@ fun Tanteo.isReseted(): Boolean {
     return juegos.nosotros == 0 && juegos.ellos == 0 && nosotros == Punto.CERO && ellos == Punto.CERO && tieBreak.nosotros == 0 && tieBreak.ellos == 0 && sets.nosotros == 0 && sets.ellos == 0
 }
 
-fun Tanteo.screen(): Pantalla{
+fun Tanteo.pantallaActual(): Pantalla{
     if (isSixSix()) return Pantalla.TIE_BREAK
-
-    return Pantalla.PUNTUACION
+    return pantalla
 }
 
 fun Tanteo.isSetBall(): Boolean {
@@ -104,7 +113,8 @@ fun Tanteo.reset(): Tanteo {
         nosotros = Punto.CERO,
         ellos = Punto.CERO,
         juegos = GameScore(0, 0),
-        colorAzul = true,
+        pantalla = Pantalla.PUNTUACION,
+        color = color,
         sets = SetScore(0, 0),
         inTieBreak = false,
         tieBreak = TieBreakScore(0, 0),

@@ -1,6 +1,7 @@
 package emperatriz.fortyLove.presentation.Screen
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
@@ -27,12 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
+import emperatriz.fortyLove.data.model.Tanteo
 
 @Composable
 fun AnimatedVisibilityScope.PreguntaTieBreak(
     onSi: () -> Unit,
     onNo: () -> Unit,
-    colorAzul: Boolean = true
+    tanteo: Tanteo
 ) {
     Column(
         modifier = Modifier
@@ -47,7 +49,7 @@ fun AnimatedVisibilityScope.PreguntaTieBreak(
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.animateEnterExit(
-                enter = slideInVertically(initialOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
+                enter = slideInVertically(initialOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
                 exit = slideOutVertically(targetOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS))
             )
         )
@@ -65,11 +67,11 @@ fun AnimatedVisibilityScope.PreguntaTieBreak(
                     .fillMaxHeight()
                     .padding(end = 4.dp)
                     .animateEnterExit(
-                        enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
+                        enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
                         exit = slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS))
                     )
                     .background(
-                        color = Color(if (colorAzul) 0xFF0D47A1 else 0xFF116600),
+                        color = Color(tanteo.color.izquierdo),
                         shape = RoundedCornerShape(topStart = 0.dp, topEnd = 20.dp, bottomEnd = 20.dp, bottomStart = 0.dp)
                     )
                     .clickable { onSi() },
@@ -92,11 +94,11 @@ fun AnimatedVisibilityScope.PreguntaTieBreak(
                     .fillMaxHeight()
                     .padding(start = 4.dp)
                     .animateEnterExit(
-                        enter = slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
+                        enter = slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
                         exit = slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS))
                     )
                     .background(
-                        color = Color(if (colorAzul) 0xFF2D67C1 else 0xFF339900),
+                        color = Color(tanteo.color.derecho),
                         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 0.dp, bottomEnd = 0.dp, bottomStart = 20.dp)
                     )
                     .clickable { onNo() },

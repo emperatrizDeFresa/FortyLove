@@ -96,9 +96,10 @@ fun WearApp(viewModel: FortyLoveViewModel) {
             puntoNuestroClick = { viewModel.puntoPara(true) },
             onReset = { viewModel.reset() },
             onUndo = { viewModel.deshacer() },
-            cambiaColor = { viewModel.cambiaColor() },
+            onOpciones = { viewModel.setOpciones() },
             onNo = { viewModel.setTieBreak(false) },
-            onSi = { viewModel.setTieBreak(true) }
+            onSi = { viewModel.setTieBreak(true) },
+            onColorSelected = { viewModel.setColor(it) }
         )
     }
 }

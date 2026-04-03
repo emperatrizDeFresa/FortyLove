@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.animation.core.EaseOutCirc
 import androidx.compose.animation.core.EaseOutCubic
@@ -68,7 +69,7 @@ fun AnimatedVisibilityScope.Puntuacion(
     puntoNuestroClick: (() -> Unit)? = null,
     onReset: (() -> Unit)? = null,
     onUndo: (() -> Unit)? = null,
-    cambiaColor: (() -> Unit)? = null,
+    onOpciones: (() -> Unit),
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "MarcadorTransition")
 
@@ -81,7 +82,7 @@ fun AnimatedVisibilityScope.Puntuacion(
     ) {
         Row(
             modifier = Modifier.animateEnterExit(
-                enter = slideInVertically(initialOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
+                enter = slideInVertically(initialOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
                 exit = slideOutVertically(targetOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS))
             ),
             verticalAlignment = Alignment.CenterVertically
@@ -102,7 +103,7 @@ fun AnimatedVisibilityScope.Puntuacion(
             Spacer(modifier = Modifier.width(18.dp))
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable(enabled = cambiaColor != null) { cambiaColor?.invoke() }
+                modifier = Modifier.clickable(enabled = true) { onOpciones.invoke() }
             ){
                 Text(
                     text = "${tanteo.sets.nosotros} SET ${tanteo.sets.ellos}",
@@ -139,7 +140,9 @@ fun AnimatedVisibilityScope.Puntuacion(
 
         Row(
             verticalAlignment = Alignment.Bottom,
-            modifier = Modifier.fillMaxSize().padding(top = 8.dp, bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 8.dp, bottom = 8.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -147,12 +150,12 @@ fun AnimatedVisibilityScope.Puntuacion(
                     .fillMaxHeight()
                     .padding(end = 4.dp)
                     .animateEnterExit(
-                        enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
+                        enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
                         exit = slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS))
                     )
                     .background(
-                        color = Color(if (tanteo.colorAzul) 0xFF0D47A1 else 0xFF116600),
-                        shape = RoundedCornerShape(topStart= 0.dp,topEnd= 20.dp,bottomEnd= 20.dp,bottomStart= 0.dp)
+                        color = Color(tanteo.color.izquierdo),
+                        shape = RoundedCornerShape(topStart = 0.dp, topEnd = 20.dp, bottomEnd = 20.dp, bottomStart = 0.dp)
                     )
                     .clickable(enabled = puntoNuestroClick != null) { puntoNuestroClick?.invoke() }
                     .padding(end = 8.dp),
@@ -173,7 +176,9 @@ fun AnimatedVisibilityScope.Puntuacion(
                         style = MaterialTheme.typography.display1,
                         fontSize = 110.sp,
                         textAlign = TextAlign.End,
-                        modifier = Modifier.width(50.dp).padding(top = 52.dp)
+                        modifier = Modifier
+                            .width(50.dp)
+                            .padding(top = 52.dp)
                     )
                 }
             }
@@ -183,12 +188,12 @@ fun AnimatedVisibilityScope.Puntuacion(
                     .fillMaxHeight()
                     .padding(start = 4.dp)
                     .animateEnterExit(
-                        enter = slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
+                        enter = slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
                         exit = slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS))
                     )
                     .background(
-                        color = Color(if (tanteo.colorAzul) 0xFF2D67C1 else 0xFF339900),
-                        shape = RoundedCornerShape(topStart= 20.dp,topEnd= 0.dp,bottomEnd= 0.dp,bottomStart= 20.dp)
+                        color = Color(tanteo.color.derecho),
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 0.dp, bottomEnd = 0.dp, bottomStart = 20.dp)
                     )
                     .clickable(enabled = puntoEllosClick != null) { puntoEllosClick?.invoke() }
                     .padding(start = 8.dp),
@@ -206,7 +211,9 @@ fun AnimatedVisibilityScope.Puntuacion(
                         style = MaterialTheme.typography.display1,
                         fontSize = 110.sp,
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.width(50.dp).padding(top = 52.dp)
+                        modifier = Modifier
+                            .width(50.dp)
+                            .padding(top = 52.dp)
                     )
                 }
                 IconoDeSaque(!tanteo.saque, Modifier.padding(bottom = 14.dp), infiniteTransition, tanteo.is40Love(), tanteo.isSetBall())
@@ -228,7 +235,9 @@ private fun IconoDeSaque(saque: Boolean, modifier: Modifier, infiniteTransition:
             imageVector = if (is40Love) Icons.Filled.Favorite else Icons.Filled.SportsBaseball,
             contentDescription = "Indicador de saque",
             tint = if (isSetBall) Color(0xFFFF3366) else Color(0xFFFFFF00),
-            modifier = modifier.size(size.dp).rotate(if (is40Love) 0f else 90f),
+            modifier = modifier
+                .size(size.dp)
+                .rotate(if (is40Love) 0f else 90f),
         )
     }
 }
@@ -251,7 +260,8 @@ fun PuntuacionPreview() {
             Puntuacion(
                 tanteo = Tanteo(saque = true, nosotros = Punto.TREINTA, ellos = Punto.QUINCE, juegos = GameScore(1, 4)),
                 puntoEllosClick = {},
-                puntoNuestroClick = {}
+                puntoNuestroClick = {},
+                onOpciones = {}
             )
         }
     }
