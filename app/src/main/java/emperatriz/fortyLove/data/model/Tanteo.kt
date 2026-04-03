@@ -30,13 +30,14 @@ enum class Pantalla() {
     OPCIONES()
 }
 
-enum class Color40Love( val izquierdo: Long, val derecho: Long) {
-    AZUL(0xFF0D47A1, 0xFF2D67C1),
-    VERDE(0xFF116600, 0xFF339900),
-    DORADO(0xFF999900, 0xFFbbbb00),
-    MORADO(0xFF4527A0, 0xFF6547C0),
-    GRIS(0xFF37474F, 0xFF57676f),
-    MALVA(0xFFAA77AA, 0xFFCC99CC)
+enum class Color40Love( val izquierdo: Long, val derecho: Long, val atencion: Long) {
+    AZUL(0xFF0D47A1, 0xFF2D67C1, 0xFFFF3366),
+    VERDE(0xFF116600, 0xFF339900,0xFFbb0000),
+    DORADO(0xFF999900, 0xFFbbbb00,0xFFcc0033),
+    MORADO(0xFF4527A0, 0xFF6547C0,0xFFFF3366),
+    GRIS(0xFF37474F, 0xFF57676f,0xFFFF3366),
+    MALVA(0xFFAA77AA, 0xFFCC99CC,0xFFcc0033),
+    MAGENTA(0xFFAA33AA, 0xFFCC55CC,0xFFbb0000)
 }
 
 
@@ -66,7 +67,8 @@ data class Tanteo(
     val sets: SetScore = SetScore(0, 0),
     val inTieBreak: Boolean = false,
     val tieBreak: TieBreakScore = TieBreakScore(0, 0),
-    val preguntaRespondida: Boolean = false
+    val preguntaRespondida: Boolean = false,
+    val undo: Boolean = false
 )
 
 fun Tanteo.is40Love(): Boolean {

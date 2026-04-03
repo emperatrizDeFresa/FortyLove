@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,7 @@ fun AnimatedVisibilityScope.Opciones(
         Color40Love.AZUL,
         Color40Love.VERDE,
         Color40Love.DORADO,
+        Color40Love.MAGENTA,
         Color40Love.MORADO,
         Color40Love.MALVA,
         Color40Love.GRIS
@@ -41,9 +43,10 @@ fun AnimatedVisibilityScope.Opciones(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        val radius = 63f // Radio del hexágono
-        val circleSize = 58.dp
+        val radius = 75f // Radio del hexágono
+        val circleSize = 68.dp
 
+        // Hexagono
         for (i in 0 until 6) {
             val angleRad = Math.toRadians((i * 60.0) - 90.0) // Empezar desde arriba
             val xOffset = (radius * cos(angleRad)).dp
@@ -75,6 +78,23 @@ fun AnimatedVisibilityScope.Opciones(
                     modifier = Modifier.fillMaxSize()
                 )
             }
+        }
+
+        // Círculo central
+        Box(
+            modifier = Modifier
+                .animateEnterExit(
+                    enter = scaleIn(tween(500, easing = rebote())) + fadeIn(tween(500)),
+                    exit = scaleOut(tween(500)) + fadeOut(tween(500))
+                )
+                .size(circleSize)
+                .clickable { onColorSelected(colors[6]) }
+        ) {
+            SplitCircle(
+                leftColor = Color(colors[6].izquierdo),
+                rightColor = Color(colors[6].derecho),
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

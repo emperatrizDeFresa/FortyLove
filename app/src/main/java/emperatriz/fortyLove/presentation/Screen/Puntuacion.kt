@@ -162,13 +162,13 @@ fun AnimatedVisibilityScope.Puntuacion(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
-                IconoDeSaque(tanteo.saque, Modifier.padding(bottom = 14.dp), infiniteTransition, tanteo.is40Love(), tanteo.isSetBall())
+                IconoDeSaque(tanteo.saque, Modifier.padding(bottom = 14.dp), infiniteTransition, tanteo.is40Love(), tanteo.isSetBall(), tanteo.color.atencion)
                 Spacer(Modifier.size(0.dp))
                 AnimatedContent(
                     targetState = if (tanteo.inTieBreak) tanteo.tieBreak.nosotros else tanteo.nosotros,
                     modifier = Modifier.fillMaxHeight(),
                     contentAlignment = Alignment.Center,
-                    transitionSpec = { pointAnimation() },
+                    transitionSpec = { pointAnimation(tanteo.undo) },
                     label = "ScoreNosotrosAnimation"
                 ) { score ->
                     Text(
@@ -203,7 +203,7 @@ fun AnimatedVisibilityScope.Puntuacion(
                     targetState = if (tanteo.inTieBreak) tanteo.tieBreak.ellos else tanteo.ellos,
                     modifier = Modifier.fillMaxHeight(),
                     contentAlignment = Alignment.Center,
-                    transitionSpec = { pointAnimation() },
+                    transitionSpec = { pointAnimation(tanteo.undo) },
                     label = "ScoreEllosAnimation"
                 ) { score ->
                     Text(
@@ -216,14 +216,14 @@ fun AnimatedVisibilityScope.Puntuacion(
                             .padding(top = 52.dp)
                     )
                 }
-                IconoDeSaque(!tanteo.saque, Modifier.padding(bottom = 14.dp), infiniteTransition, tanteo.is40Love(), tanteo.isSetBall())
+                IconoDeSaque(!tanteo.saque, Modifier.padding(bottom = 14.dp), infiniteTransition, tanteo.is40Love(), tanteo.isSetBall(), tanteo.color.atencion)
             }
         }
     }
 }
 
 @Composable
-private fun IconoDeSaque(saque: Boolean, modifier: Modifier, infiniteTransition: InfiniteTransition, is40Love: Boolean, isSetBall: Boolean) {
+private fun IconoDeSaque(saque: Boolean, modifier: Modifier, infiniteTransition: InfiniteTransition, is40Love: Boolean, isSetBall: Boolean, atencion:Long) {
     val size by infiniteTransition.animateFloat(
         initialValue = if (is40Love) 28f else 16f,
         targetValue = 35f,
@@ -234,7 +234,7 @@ private fun IconoDeSaque(saque: Boolean, modifier: Modifier, infiniteTransition:
         Icon(
             imageVector = if (is40Love) Icons.Filled.Favorite else Icons.Filled.SportsBaseball,
             contentDescription = "Indicador de saque",
-            tint = if (isSetBall) Color(0xFFFF3366) else Color(0xFFFFFF00),
+            tint = if (isSetBall) Color(atencion) else Color.Yellow,
             modifier = modifier
                 .size(size.dp)
                 .rotate(if (is40Love) 0f else 90f),
@@ -243,12 +243,12 @@ private fun IconoDeSaque(saque: Boolean, modifier: Modifier, infiniteTransition:
 }
 
 const val TRANSITION_MILLIS_POINTS = 400
-fun pointAnimation(): ContentTransform{
+fun pointAnimation(reverse: Boolean = false): ContentTransform{
     return (
-            slideInVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = EaseOutBack)) { it } + fadeIn(animationSpec = tween(TRANSITION_MILLIS_POINTS/2))
+            slideInVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = EaseOutBack)) { if (reverse) it else -it } + fadeIn(animationSpec = tween(TRANSITION_MILLIS_POINTS/2))
     )
     .togetherWith(
-        slideOutVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = EaseOutCirc)) { -it } + fadeOut(animationSpec = tween(TRANSITION_MILLIS_POINTS/2, easing = EaseOutCirc))
+        slideOutVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = EaseOutCirc)) { if (reverse) -it else it  } + fadeOut(animationSpec = tween(TRANSITION_MILLIS_POINTS/2, easing = EaseOutCirc))
     )
 }
 

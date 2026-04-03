@@ -134,7 +134,8 @@ class FortyLoveViewModel(
                 sets = sets,
                 inTieBreak = inTieBreak,
                 tieBreak = tieBreak,
-                preguntaRespondida = false
+                preguntaRespondida = false,
+                undo = false
             )
             updateTanteo(updated)
         }
@@ -159,7 +160,8 @@ class FortyLoveViewModel(
     fun deshacer() {
         viewModelScope.launch {
             if (_historial.isNotEmpty()) {
-                val tanteoAnterior = _historial.removeAt(_historial.size - 1)
+                var tanteoAnterior = _historial.removeAt(_historial.size - 1)
+                tanteoAnterior = tanteoAnterior.copy(undo = true)
                 updateTanteo(tanteoAnterior)
             }
         }
