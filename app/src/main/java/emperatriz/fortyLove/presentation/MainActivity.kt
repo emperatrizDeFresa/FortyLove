@@ -13,26 +13,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.NotificationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.wear.compose.material.MaterialTheme
-import androidx.wear.compose.material.TimeText
 import androidx.wear.ongoing.OngoingActivity
 import androidx.wear.ongoing.Status
-import androidx.wear.tooling.preview.devices.WearDevices
 import emperatriz.fortyLove.R
-import emperatriz.fortyLove.data.model.Punto
-import emperatriz.fortyLove.data.model.Tanteo
-import emperatriz.fortyLove.data.model.isSixSix
+import emperatriz.fortyLove.presentation.Screen.Marcador
 import emperatriz.fortyLove.presentation.theme.FortyLoveTheme
 
 class MainActivity : ComponentActivity() {
@@ -101,15 +90,15 @@ fun WearApp(viewModel: FortyLoveViewModel) {
     val tanteoState by viewModel.tanteo.collectAsState()
 
     FortyLoveTheme {
-       Marcador(
-           tanteo = tanteoState,
-           puntoEllosClick = { viewModel.puntoPara(false) },
-           puntoNuestroClick = { viewModel.puntoPara(true) },
-           onReset = { viewModel.reset() },
-           onUndo = { viewModel.deshacer() },
-           cambiaColor = { viewModel.cambiaColor() },
-           onNo = { viewModel.setTieBreak(false) },
-           onSi = { viewModel.setTieBreak(true) }
-       )
+        Marcador(
+            tanteo = tanteoState,
+            puntoEllosClick = { viewModel.puntoPara(false) },
+            puntoNuestroClick = { viewModel.puntoPara(true) },
+            onReset = { viewModel.reset() },
+            onUndo = { viewModel.deshacer() },
+            cambiaColor = { viewModel.cambiaColor() },
+            onNo = { viewModel.setTieBreak(false) },
+            onSi = { viewModel.setTieBreak(true) }
+        )
     }
 }

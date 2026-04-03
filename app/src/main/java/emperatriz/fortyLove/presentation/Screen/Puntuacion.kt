@@ -1,7 +1,11 @@
-package emperatriz.fortyLove.presentation
+package emperatriz.fortyLove.presentation.Screen
 
-import android.view.HapticFeedbackConstants
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.EaseOutBack
+import androidx.compose.animation.core.EaseOutCirc
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.RepeatMode
@@ -9,18 +13,25 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,77 +54,11 @@ import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
+import emperatriz.fortyLove.data.model.GameScore
 import emperatriz.fortyLove.data.model.Punto
 import emperatriz.fortyLove.data.model.Tanteo
 import emperatriz.fortyLove.data.model.is40Love
 import emperatriz.fortyLove.data.model.isSetBall
-import emperatriz.fortyLove.data.model.isSixSix
-
-
-
-const val TRANSITION_MILLIS = 500
-
-@Composable
-fun Marcador(
-    tanteo: Tanteo,
-    puntoEllosClick: (() -> Unit),
-    puntoNuestroClick: (() -> Unit),
-    onReset: (() -> Unit),
-    onUndo: (() -> Unit),
-    cambiaColor: (() -> Unit),
-    onNo: (() -> Unit),
-    onSi: () -> Unit
-){
-    val view = LocalView.current
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background),
-        contentAlignment = Alignment.Center
-    ) {
-        AnimatedContent(
-            targetState = tanteo.isSixSix(),
-            transitionSpec = {
-                // Mantenemos el contenido que sale durante 2 * TRANSITION_MILLIS
-                // El contenido que entra no tiene animación propia en AnimatedContent (None)
-                // ya que la manejamos internamente con animateEnterExit y delays.
-                EnterTransition.None togetherWith slideOutVertically(animationSpec = tween(TRANSITION_MILLIS * 2)) { 0 }
-            },
-            label = "TieBreakTransition"
-        ) { isSixSix ->
-            if (isSixSix){
-                PreguntaTieBreak(
-                    onNo = { 
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        onNo.invoke() 
-                    },
-                    onSi = { 
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        onSi.invoke() 
-                    },
-                    colorAzul = tanteo.colorAzul
-                )
-            }
-            else{
-                Puntuacion(
-                    tanteo = tanteo,
-                    puntoEllosClick = { 
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        puntoEllosClick.invoke() 
-                    },
-                    puntoNuestroClick = { 
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        puntoNuestroClick.invoke() 
-                    },
-                    onReset = { onReset.invoke() },
-                    onUndo = { onUndo.invoke() },
-                    cambiaColor = { cambiaColor.invoke() }
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun AnimatedVisibilityScope.Puntuacion(
@@ -217,13 +161,21 @@ fun AnimatedVisibilityScope.Puntuacion(
             ) {
                 IconoDeSaque(tanteo.saque, Modifier.padding(bottom = 14.dp), infiniteTransition, tanteo.is40Love(), tanteo.isSetBall())
                 Spacer(Modifier.size(0.dp))
-                Text(
-                    text = "${if (tanteo.inTieBreak) tanteo.tieBreak.nosotros else tanteo.nosotros}",
-                    style = MaterialTheme.typography.display1,
-                    fontSize = 110.sp,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.width(50.dp)
-                )
+                AnimatedContent(
+                    targetState = if (tanteo.inTieBreak) tanteo.tieBreak.nosotros else tanteo.nosotros,
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center,
+                    transitionSpec = { pointAnimation() },
+                    label = "ScoreNosotrosAnimation"
+                ) { score ->
+                    Text(
+                        text = "$score",
+                        style = MaterialTheme.typography.display1,
+                        fontSize = 110.sp,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.width(50.dp).padding(top = 52.dp)
+                    )
+                }
             }
             Row(
                 modifier = Modifier
@@ -242,101 +194,22 @@ fun AnimatedVisibilityScope.Puntuacion(
                     .padding(start = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Text(
-                    text = "${if (tanteo.inTieBreak) tanteo.tieBreak.ellos else tanteo.ellos}",
-                    style = MaterialTheme.typography.display1,
-                    fontSize = 110.sp,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.width(50.dp)
-                )
+                AnimatedContent(
+                    targetState = if (tanteo.inTieBreak) tanteo.tieBreak.ellos else tanteo.ellos,
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center,
+                    transitionSpec = { pointAnimation() },
+                    label = "ScoreEllosAnimation"
+                ) { score ->
+                    Text(
+                        text = "$score",
+                        style = MaterialTheme.typography.display1,
+                        fontSize = 110.sp,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.width(50.dp).padding(top = 52.dp)
+                    )
+                }
                 IconoDeSaque(!tanteo.saque, Modifier.padding(bottom = 14.dp), infiniteTransition, tanteo.is40Love(), tanteo.isSetBall())
-            }
-        }
-    }
-}
-
-@Composable
-fun AnimatedVisibilityScope.PreguntaTieBreak(
-    onSi: () -> Unit,
-    onNo: () -> Unit,
-    colorAzul: Boolean = true
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = "TIE BREAK?",
-            color = Color.White,
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.animateEnterExit(
-                enter = slideInVertically(initialOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
-                exit = slideOutVertically(targetOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS))
-            )
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 18.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            // Botón SÍ
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .fillMaxHeight()
-                    .padding(end = 4.dp)
-                    .animateEnterExit(
-                        enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
-                        exit = slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS))
-                    )
-                    .background(
-                        color = Color(if (colorAzul) 0xFF0D47A1 else 0xFF116600),
-                        shape = RoundedCornerShape(topStart = 0.dp, topEnd = 20.dp, bottomEnd = 20.dp, bottomStart = 0.dp)
-                    )
-                    .clickable { onSi() },
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(
-                    text = "SÍ",
-                    style = MaterialTheme.typography.display1,
-                    fontSize = 100.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.width(50.dp).padding(end = 12.dp)
-                )
-            }
-
-            // Botón NO
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .fillMaxHeight()
-                    .padding(start = 4.dp)
-                    .animateEnterExit(
-                        enter = slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS)),
-                        exit = slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS))
-                    )
-                    .background(
-                        color = Color(if (colorAzul) 0xFF2D67C1 else 0xFF339900),
-                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 0.dp, bottomEnd = 0.dp, bottomStart = 20.dp)
-                    )
-                    .clickable { onNo() },
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Text(
-                    text = "NO",
-                    style = MaterialTheme.typography.display1,
-                    fontSize = 100.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.width(50.dp).padding(start = 12.dp)
-                )
             }
         }
     }
@@ -360,13 +233,23 @@ private fun IconoDeSaque(saque: Boolean, modifier: Modifier, infiniteTransition:
     }
 }
 
+const val TRANSITION_MILLIS_POINTS = 400
+fun pointAnimation(): ContentTransform{
+    return (
+            slideInVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = EaseOutBack)) { it } + fadeIn(animationSpec = tween(TRANSITION_MILLIS_POINTS/2))
+    )
+    .togetherWith(
+        slideOutVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = EaseOutCirc)) { -it } + fadeOut(animationSpec = tween(TRANSITION_MILLIS_POINTS/2, easing = EaseOutCirc))
+    )
+}
+
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun PuntuacionPreview() {
     Box {
         AnimatedVisibility(visible = true) {
             Puntuacion(
-                tanteo = Tanteo(saque = true, nosotros = Punto.TREINTA, ellos = Punto.QUINCE, juegos = emperatriz.fortyLove.data.model.GameScore(1, 4)),
+                tanteo = Tanteo(saque = true, nosotros = Punto.TREINTA, ellos = Punto.QUINCE, juegos = GameScore(1, 4)),
                 puntoEllosClick = {},
                 puntoNuestroClick = {}
             )

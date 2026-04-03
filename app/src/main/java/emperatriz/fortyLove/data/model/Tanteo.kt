@@ -24,6 +24,12 @@ enum class Punto(val label: String, val code: Int) {
     }
 }
 
+enum class Pantalla() {
+    PUNTUACION(),
+    TIE_BREAK(),
+    OPCIONES()
+}
+
 
 data class GameScore(
     val nosotros: Int,
@@ -65,6 +71,12 @@ fun Tanteo.isSixSix(): Boolean {
 
 fun Tanteo.isReseted(): Boolean {
     return juegos.nosotros == 0 && juegos.ellos == 0 && nosotros == Punto.CERO && ellos == Punto.CERO && tieBreak.nosotros == 0 && tieBreak.ellos == 0 && sets.nosotros == 0 && sets.ellos == 0
+}
+
+fun Tanteo.screen(): Pantalla{
+    if (isSixSix()) return Pantalla.TIE_BREAK
+
+    return Pantalla.PUNTUACION
 }
 
 fun Tanteo.isSetBall(): Boolean {
