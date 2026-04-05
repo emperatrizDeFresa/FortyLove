@@ -82,7 +82,7 @@ fun AnimatedVisibilityScope.Puntuacion(
     ) {
         Row(
             modifier = Modifier.animateEnterExit(
-                enter = slideInVertically(initialOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
+                enter = slideInVertically(initialOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS-100, delayMillis = TRANSITION_MILLIS)),
                 exit = slideOutVertically(targetOffsetY = { -it - 40 }, animationSpec = tween(TRANSITION_MILLIS))
             ),
             verticalAlignment = Alignment.CenterVertically
@@ -150,7 +150,7 @@ fun AnimatedVisibilityScope.Puntuacion(
                     .fillMaxHeight()
                     .padding(end = 4.dp)
                     .animateEnterExit(
-                        enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
+                        enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS-100, delayMillis = TRANSITION_MILLIS, easing = rebote())),
                         exit = slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(TRANSITION_MILLIS))
                     )
                     .background(
@@ -188,7 +188,7 @@ fun AnimatedVisibilityScope.Puntuacion(
                     .fillMaxHeight()
                     .padding(start = 4.dp)
                     .animateEnterExit(
-                        enter = slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS, delayMillis = TRANSITION_MILLIS, easing = rebote())),
+                        enter = slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS-100, delayMillis = TRANSITION_MILLIS, easing = rebote())),
                         exit = slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(TRANSITION_MILLIS))
                     )
                     .background(
