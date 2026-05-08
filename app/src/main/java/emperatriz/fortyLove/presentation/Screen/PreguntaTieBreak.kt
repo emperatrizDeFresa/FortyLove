@@ -1,7 +1,7 @@
 package emperatriz.fortyLove.presentation.Screen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
@@ -23,11 +23,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
+import androidx.wear.tooling.preview.devices.WearDevices
+import emperatriz.fortyLove.R
+import emperatriz.fortyLove.data.model.Punto
 import emperatriz.fortyLove.data.model.Tanteo
 
 @Composable
@@ -44,7 +49,7 @@ fun AnimatedVisibilityScope.PreguntaTieBreak(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "TIE BREAK?",
+            text = stringResource(R.string.tie_break_ask),
             color = Color.White,
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
@@ -78,12 +83,14 @@ fun AnimatedVisibilityScope.PreguntaTieBreak(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
-                    text = "SÍ",
+                    text = stringResource(R.string.yes),
                     style = MaterialTheme.typography.display1,
                     fontSize = 100.sp,
                     color = Color.White,
                     textAlign = TextAlign.End,
-                    modifier = Modifier.width(50.dp).padding(end = 12.dp)
+                    modifier = Modifier
+                        .width(60.dp)
+                        .padding(end = 12.dp)
                 )
             }
 
@@ -105,14 +112,34 @@ fun AnimatedVisibilityScope.PreguntaTieBreak(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = "NO",
+                    text = stringResource(R.string.no),
                     style = MaterialTheme.typography.display1,
                     fontSize = 100.sp,
                     color = Color.White,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.width(50.dp).padding(start = 12.dp)
+                    modifier = Modifier
+                        .width(50.dp)
+                        .padding(start = 12.dp)
                 )
             }
+        }
+    }
+}
+
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
+@Composable
+fun PreguntaTieBreakPreview() {
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+        AnimatedVisibility(visible = true) {
+            PreguntaTieBreak(
+                onSi = { },
+                onNo = { },
+                tanteo = Tanteo(
+                    saque = true,
+                    nosotros = Punto.CERO,
+                    ellos = Punto.CERO
+                )
+            )
         }
     }
 }

@@ -1,5 +1,8 @@
 package emperatriz.fortyLove.data.model
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import emperatriz.fortyLove.R
 import kotlin.math.abs
 
 /**
@@ -9,12 +12,12 @@ import kotlin.math.abs
 /**
  * Enum que modela los posibles valores de puntuación con su etiqueta y código entero.
  */
-enum class Punto(val label: String, val code: Int) {
+enum class Punto(val label: String, val code: Int, val resId: Int? = null) {
     CERO("0", 0),
     QUINCE("15", 1),
     TREINTA("30", 2),
     CUARENTA("40", 3),
-    VENTAJA("V", 4);
+    VENTAJA("V", 4, R.string.advantage_label);
 
     override fun toString(): String = label
 

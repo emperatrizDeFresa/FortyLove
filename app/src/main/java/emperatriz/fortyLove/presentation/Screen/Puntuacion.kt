@@ -4,10 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.EaseOutBack
-import androidx.compose.animation.core.EaseOutCirc
-import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -46,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,6 +52,7 @@ import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
+import emperatriz.fortyLove.R
 import emperatriz.fortyLove.data.model.GameScore
 import emperatriz.fortyLove.data.model.Punto
 import emperatriz.fortyLove.data.model.Tanteo
@@ -95,7 +93,7 @@ fun AnimatedVisibilityScope.Puntuacion(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Replay,
-                    contentDescription = "Reset puntuación",
+                    contentDescription = stringResource(R.string.reset_description),
                     tint = Color.White.copy(alpha = 0.3f),
                     modifier = Modifier.size(20.dp)
                 )
@@ -106,7 +104,7 @@ fun AnimatedVisibilityScope.Puntuacion(
                 modifier = Modifier.clickable(enabled = true) { onOpciones.invoke() }
             ){
                 Text(
-                    text = "${tanteo.sets.nosotros} SET ${tanteo.sets.ellos}",
+                    text = "${tanteo.sets.nosotros} ${stringResource(R.string.set_label)} ${tanteo.sets.ellos}",
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W400,
@@ -131,7 +129,7 @@ fun AnimatedVisibilityScope.Puntuacion(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Undo,
-                    contentDescription = "Deshacer último punto",
+                    contentDescription = stringResource(R.string.undo_description),
                     tint = Color.White.copy(alpha = 0.3f),
                     modifier = Modifier.size(20.dp)
                 )
@@ -172,7 +170,7 @@ fun AnimatedVisibilityScope.Puntuacion(
                     label = "ScoreNosotrosAnimation"
                 ) { score ->
                     Text(
-                        text = "$score",
+                        text = if (score is Punto) PuntoLabel(score as Punto) else "$score",
                         style = MaterialTheme.typography.display1,
                         fontSize = 110.sp,
                         textAlign = TextAlign.End,
@@ -207,7 +205,7 @@ fun AnimatedVisibilityScope.Puntuacion(
                     label = "ScoreEllosAnimation"
                 ) { score ->
                     Text(
-                        text = "$score",
+                        text = if (score is Punto) PuntoLabel(score as Punto) else "$score",
                         style = MaterialTheme.typography.display1,
                         fontSize = 110.sp,
                         textAlign = TextAlign.Start,
@@ -227,13 +225,13 @@ private fun IconoDeSaque(saque: Boolean, modifier: Modifier, infiniteTransition:
     val size by infiniteTransition.animateFloat(
         initialValue = if (is40Love) 28f else 16f,
         targetValue = 35f,
-        animationSpec = infiniteRepeatable(tween(if (is40Love) 450 else 650, easing = EaseOutCubic), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(if (is40Love) 450 else 650, easing = androidx.compose.animation.core.EaseOutCubic), RepeatMode.Reverse),
         label = "sizeAnimation"
     )
     if (saque) {
         Icon(
             imageVector = if (is40Love) Icons.Filled.Favorite else Icons.Filled.SportsBaseball,
-            contentDescription = "Indicador de saque",
+            contentDescription = stringResource(R.string.serve_description),
             tint = if (isSetBall) Color(atencion) else Color.Yellow,
             modifier = modifier
                 .size(size.dp)
@@ -245,11 +243,16 @@ private fun IconoDeSaque(saque: Boolean, modifier: Modifier, infiniteTransition:
 const val TRANSITION_MILLIS_POINTS = 400
 fun pointAnimation(reverse: Boolean = false): ContentTransform{
     return (
-            slideInVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = EaseOutBack)) { if (reverse) it else -it } + fadeIn(animationSpec = tween(TRANSITION_MILLIS_POINTS/2))
+            slideInVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = androidx.compose.animation.core.EaseOutBack)) { if (reverse) it else -it } + fadeIn(animationSpec = tween(TRANSITION_MILLIS_POINTS/2))
     )
     .togetherWith(
-        slideOutVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = EaseOutCirc)) { if (reverse) -it else it  } + fadeOut(animationSpec = tween(TRANSITION_MILLIS_POINTS/2, easing = EaseOutCirc))
+        slideOutVertically(animationSpec = tween(TRANSITION_MILLIS_POINTS, easing = androidx.compose.animation.core.EaseOutCirc)) { if (reverse) -it else it  } + fadeOut(animationSpec = tween(TRANSITION_MILLIS_POINTS/2, easing = androidx.compose.animation.core.EaseOutCirc))
     )
+}
+
+@Composable
+fun PuntoLabel(punto: Punto):String {
+    return if (punto.resId != null) stringResource(punto.resId) else punto.label
 }
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">40-Love</string>
+    <string name="ongoing_notification_channel_name">Partido en curso</string>
+    <string name="ongoing_notification_title">40-Love</string>
+    <string name="ongoing_notification_text">Partido en curso</string>
+    <string name="reset_description">Reiniciar puntuación</string>
+    <string name="undo_description">Deshacer último punto</string>
+    <string name="set_label">SET</string>
+    <string name="serve_description">Indicador de saque</string>
+    <string name="tie_break_ask">¿TIE BREAK?</string>
+    <string name="yes">SÍ</string>
+    <string name="no">NO</string>
+    <string name="advantage_label">V</string>
+</resources>

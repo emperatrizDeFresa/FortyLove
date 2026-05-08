@@ -75,9 +75,9 @@ class FortyLoveViewModel(
                     }
                     // Reset tras set ganado por TB
                     juegos = GameScore(0, 0)
+                    inTieBreak = false
                     ours = Punto.CERO
                     theirs = Punto.CERO
-                    inTieBreak = false
                     tieBreak = TieBreakScore(0, 0)
                     saque = !current.saque // Cambio de saque tras set
                 }
